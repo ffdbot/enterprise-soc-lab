@@ -1,13 +1,13 @@
 
 # 02 - Network Reconnaissance and SMB Investigation
 
-## Overview
+## 1. Overview
 
-This section documents network connectivity testing, service discovery and SMB file-sharing investigations conducted within the SOC home lab.
+This project documents network connectivity testing, service discovery and Server Message Block (SMB) file-sharing investigation conducted within my SOC home lab.
 
-The exercise used Kali Linux as the testing machine and Windows 11 as the target endpoint. Both virtual machines communicated through NAT networking in a controlled environment.
+The investigation used Kali Linux as the testing machine and Windows 11 as the target endpoint. Both virtual machines communicated through NAT networking in a controlled environment.
 
-## Lab Environment
+## 2. Lab Environment
 
 | Component | Configuration |
 |---|---|
@@ -17,92 +17,103 @@ The exercise used Kali Linux as the testing machine and Windows 11 as the target
 | Windows IP | 192.168.40.128 |
 | Kali Linux IP | 192.168.40.129 |
 | SMB service | TCP 445 |
+| Virtualisation | VMware Workstation Pro |
 
-## Activities Completed
+## 3. Activities Performed
 
-### 1. Network Connectivity Testing
+### 3.1 Network Connectivity Testing
 
-- Configured communication between Kali Linux and Windows 11.
-- Tested network connectivity using ping.
-- Identified and resolved an initial connectivity issue.
-- Verified communication between both virtual machines.
+- Identified the IP address of the Kali Linux virtual machine.
+- Tested connectivity to the Windows 11 endpoint.
+- Observed an initial failed ping followed by successful replies.
+- Verified network communication between both virtual machines.
 
-### 2. Windows File Sharing Configuration
+**Result:** Network connectivity between Kali Linux and Windows 11 was successfully established.
 
-- Enabled Network Discovery.
-- Enabled File and Printer Sharing.
-- Created a shared folder named Labshare.
-- Configured sharing permissions.
-- Used netstat to verify SMB was listening on TCP port 445.
+### 3.2 Nmap Network Reconnaissance
 
-### 3. SMB Connectivity and Enumeration
+Performed Nmap reconnaissance against the Windows endpoint at `192.168.40.128`.
 
-From Kali Linux:
+The scan identified the target as active and revealed the following open TCP ports:
 
-- Used nc to test TCP port 445.
-- Used Nmap to validate SMB port availability.
-- Used smbclient to authenticate to the Windows shared folder.
-- Accessed the Labshare directory.
-- Downloaded test.txt.
-- Verified the downloaded file contents: "SOC Portfolio lab".
-
-### 4. Nmap Service and Version Discovery
-
-Performed an Nmap service/version scan against the Windows virtual machine.
-
-The following open ports were identified:
-
-| Port | Status |
-|---|---|
-| 135 | Open |
-| 139 | Open |
-| 445 | Open |
-| 5357 | Open |
-
-SMB information was also reviewed as part of the investigation.
-
-### 5. Sysmon Event Investigation
-
-Reviewed the Sysmon Operational log following network reconnaissance.
-
-Events investigated:
-
-| Event ID | Description | Observation |
+| Port | Service | Purpose |
 |---|---|---|
-| 1 | Process Creation | Multiple events observed |
-| 3 | Network Connection | Not observed under initial configuration |
-| 22 | DNS Query | One event observed |
+| 135 | MSRPC | Microsoft RPC |
+| 139 | NetBIOS-SSN | NetBIOS session service |
+| 445 | Microsoft-DS | SMB file sharing |
+| 5357 | HTTP | Microsoft HTTPAPI |
 
-The process taskhostw.exe was investigated and identified as legitimate within the lab context.
+The scan also identified 996 filtered TCP ports.
 
-## Analyst Observations
+**Additional observation:**
+- SMB message signing was reported as enabled and required.
+- Service and operating system detection information was returned by Nmap.
 
-- SMB was reachable from Kali Linux over TCP port 445.
-- Windows file sharing was successfully accessed.
-- Nmap identified four open ports on the Windows endpoint.
-- Sysmon generated process creation and DNS query telemetry.
-- Network testing and endpoint event analysis were correlated.
+**Result:** Successfully identified exposed network services and gathered information about the Windows endpoint.
 
-## Skills Demonstrated
+### 3.3 SMB Share Investigation
 
-- NAT networking and virtual machine connectivity.
-- Network troubleshooting.
-- Nmap service and port discovery.
-- TCP connectivity testing using nc.
-- Windows SMB configuration.
-- SMB enumeration using smbclient.
-- Windows network administration.
-- Sysmon event investigation.
-- Security event correlation.
+Investigated SMB file sharing between Kali Linux and the Windows 11 endpoint.
 
-## Evidence
+Activities included:
 
-Supporting screenshots and investigation evidence will be stored in the evidence directory.
+- Accessed the Windows SMB share from Kali Linux.
+- Authenticated to the shared resource.
+- Listed available files within the share.
+- Identified `test.txt`.
+- Retrieved the file using SMB client functionality.
+- Verified the downloaded file in the Kali Linux environment.
 
-## Project Information
+**Result:** Successfully accessed the SMB share and transferred a test file between the Windows and Kali Linux environments.
+
+## 4. Security Observations
+
+The investigation demonstrated several important security monitoring considerations:
+
+1. Open ports 135, 139 and 445 expose Windows networking and file-sharing services.
+2. SMB provides an important area for investigating authentication and file-access activity.
+3. Network reconnaissance helps identify active hosts and exposed services.
+4. SMB message signing was enabled and required on the observed endpoint.
+5. Connectivity testing helps establish whether endpoints can communicate before further investigation.
+
+## 5. Evidence
+
+Screenshots extracted from the SOC Analyst Portfolio Master Journal.
+
+### Network Connectivity and SMB Validation
+
+![SMB investigation](evidence/smb-share-access-and-file-transfer.jpeg)
+
+### Nmap Service and Version Reconnaissance
+
+![Nmap reconnaissance](evidence/nmap-service-version-scan.jpeg)
+
+### Kali-to-Windows Connectivity
+
+![Network connectivity](evidence/kali-to-windows-ping-connectivity.jpeg)
+
+## 6. Skills Demonstrated
+
+- Network reconnaissance
+- Nmap service discovery
+- Network connectivity troubleshooting
+- TCP port identification
+- SMB enumeration
+- SMB client authentication
+- File-share investigation
+- Linux command-line operations
+- Windows network service analysis
+- Technical documentation and evidence management
+
+## 7. Project Outcome
+
+Successfully established communication between Kali Linux and Windows 11, identified exposed Windows services through Nmap reconnaissance, and investigated SMB file sharing through authentication and file transfer.
+
+This exercise forms part of my practical development towards Security Operations Centre (SOC) analysis, network investigation and security monitoring.
+
+---
 
 **Project:** Enterprise SOC Home Lab  
 **Platform:** VMware Workstation Pro  
-**Testing OS:** Kali Linux  
-**Target OS:** Windows 11  
-**Author:** Temitope Akande
+**Testing Environment:** Kali Linux  
+**Target Environment:** Windows 11
