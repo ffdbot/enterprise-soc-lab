@@ -38,7 +38,11 @@ The virtual environment provides a controlled lab for:
 
 ## Evidence
 
-Screenshots and supporting documentation will be added to this directory as the portfolio develops.
+### Kali Linux Virtual Machine Configuration
+
+The screenshot below demonstrates the Kali Linux virtual machine configuration used within the SOC home lab.
+
+![Kali Linux VM Configuration](evidence/kali-linux-vm-configuration.jpg)
 
 ---
 
